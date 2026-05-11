@@ -3,41 +3,76 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Экзаменационный тест ПМ04</title>
+    <title>Экзаменационный тест</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <header class="topbar">
-      <div>
-        <p class="eyebrow">ПМ04 · 2 курс</p>
+      <div class="brand">
+        <p class="eyebrow" id="bankEyebrow">ПМ04 · 2 курс</p>
         <h1>Экзаменационный тест</h1>
       </div>
 
-      <div class="score" aria-live="polite">
-        <span id="answeredCount">0</span>/<span id="totalCount">0</span>
-        <small id="scoreText">выбрано</small>
+      <div class="top-actions">
+        <button class="icon-button" type="button" id="themeToggle" aria-label="Переключить тему" title="Переключить тему">
+          <span id="themeIcon">☾</span>
+        </button>
+
+        <div class="status-strip" aria-live="polite" hidden>
+          <div class="status-card">
+            <span id="answeredCount">0</span>/<span id="totalCount">0</span>
+            <small id="scoreText">выбрано</small>
+          </div>
+          <div class="status-card timer-card" id="timerCard">
+            <span id="timerText">--:--</span>
+            <small id="timerLabel">таймер</small>
+          </div>
+        </div>
       </div>
     </header>
 
-    <main>
-      <section class="toolbar" aria-label="Параметры теста">
+    <main id="setupScreen" class="setup-layout">
+      <section class="setup-hero">
+        <p class="eyebrow">Тестирование</p>
+        <h2 id="heroTitle">Подготовка и экзамен в одном месте</h2>
+        <p id="heroText">Настройте параметры перед началом.</p>
+      </section>
+
+      <section class="setup-card" aria-label="Настройки теста">
         <div class="segmented" role="group" aria-label="Режим теста">
-          <button class="mode-button active" type="button" data-mode="all">Все вопросы</button>
-          <button class="mode-button" type="button" data-mode="random40">Случайные 40</button>
+          <button class="mode-button" type="button" data-mode="all">Все вопросы</button>
+          <button class="mode-button active" type="button" data-mode="random40">Случайные 40</button>
+          <button class="mode-button" type="button" data-mode="exam">Экзамен</button>
         </div>
 
-        <label class="select-label">
-          Вариант
-          <select id="variantSelect">
-            <option value="all">Все</option>
-          </select>
-        </label>
-
-        <div class="actions">
-          <button class="secondary" type="button" id="shuffleButton">Перемешать</button>
-          <button class="secondary" type="button" id="resetButton">Сбросить</button>
-          <button class="primary" type="button" id="checkButton">Проверить</button>
+        <div class="setup-fields">
+          <label class="field">
+            <span>Модуль</span>
+            <select id="bankSelect"></select>
+          </label>
+          <label class="field">
+            <span>Вариант</span>
+            <select id="variantSelect">
+              <option value="all">Все варианты</option>
+            </select>
+          </label>
         </div>
+
+        <div class="setup-summary">
+          <span id="setupCount">0 вопросов</span>
+          <span id="setupModeHint">Режим подготовки</span>
+        </div>
+
+        <button class="primary hero-btn" type="button" id="startTestButton">Начать тестирование</button>
+      </section>
+    </main>
+
+    <main id="testScreen" hidden>
+      <section class="toolbar" aria-label="Управление тестом">
+        <button class="secondary" type="button" id="menuButton">В меню</button>
+        <div class="toolbar-spacer"></div>
+        <button class="secondary" type="button" id="resetButton">Сбросить ответы</button>
+        <button class="primary" type="button" id="checkButton">Завершить</button>
       </section>
 
       <div class="progress" aria-hidden="true">
@@ -45,14 +80,67 @@
       </div>
 
       <section id="resultPanel" class="result-panel" hidden>
-        <strong id="resultTitle"></strong>
-        <span id="resultDetails"></span>
+        <div>
+          <strong id="resultTitle"></strong>
+          <span id="resultDetails"></span>
+        </div>
+        <span id="gradeBadge" class="grade-badge"></span>
       </section>
 
-      <section id="questions" class="questions" aria-label="Вопросы теста"></section>
+      <div class="test-layout">
+        <aside class="question-map" aria-label="Навигация по вопросам">
+          <div class="map-card">
+            <div>
+              <p class="eyebrow">Прогресс</p>
+              <strong id="mapSummary">0 из 0</strong>
+            </div>
+            <button class="secondary compact" type="button" id="firstUnansweredButton">К первому без ответа</button>
+          </div>
+          <div class="legend" aria-label="Обозначения">
+            <span><i class="dot done"></i> отвечено</span>
+            <span><i class="dot current"></i> текущий</span>
+            <span><i class="dot empty"></i> пусто</span>
+          </div>
+          <div id="questionNavigator" class="question-navigator"></div>
+        </aside>
+
+        <section id="questions" class="questions" aria-label="Вопросы теста"></section>
+      </div>
     </main>
 
+    <div class="confirm-backdrop" id="confirmDialog" hidden>
+      <section class="confirm-box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
+        <p class="eyebrow">Подтверждение</p>
+        <h2 id="confirmTitle">Подтвердите действие</h2>
+        <p id="confirmText"></p>
+        <div class="confirm-actions">
+          <button class="secondary" type="button" id="confirmCancel">Отмена</button>
+          <button class="danger-button" type="button" id="confirmAccept">Подтвердить</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="confirm-backdrop" id="rulesDialog" hidden>
+      <section class="confirm-box" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+        <p class="eyebrow">Экзамен</p>
+        <h2 id="rulesTitle">Правила перед стартом</h2>
+        <div class="rules-list">
+          <span>40 случайных вопросов из выбранной выборки</span>
+          <span>1 час на выполнение</span>
+          <span>2,5 балла за правильный ответ</span>
+          <span>Выход, сброс и сдача требуют подтверждения</span>
+        </div>
+        <div class="confirm-actions">
+          <button class="secondary" type="button" id="rulesCancel">Назад</button>
+          <button class="primary" type="button" id="rulesAccept">Начать экзамен</button>
+        </div>
+      </section>
+    </div>
+
+    <button class="fab" id="scrollTopBtn" type="button" aria-label="Наверх" title="Наверх" hidden>↑</button>
+
     <script src="questions.js"></script>
+    <script src="questions-pm03.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
