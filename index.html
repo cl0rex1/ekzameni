@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Экзаменационный тест ПМ04</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">ПМ04 · 2 курс</p>
+        <h1>Экзаменационный тест</h1>
+      </div>
+
+      <div class="score" aria-live="polite">
+        <span id="answeredCount">0</span>/<span id="totalCount">0</span>
+        <small id="scoreText">выбрано</small>
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="Параметры теста">
+        <div class="segmented" role="group" aria-label="Режим теста">
+          <button class="mode-button active" type="button" data-mode="all">Все вопросы</button>
+          <button class="mode-button" type="button" data-mode="random40">Случайные 40</button>
+        </div>
+
+        <label class="select-label">
+          Вариант
+          <select id="variantSelect">
+            <option value="all">Все</option>
+          </select>
+        </label>
+
+        <div class="actions">
+          <button class="secondary" type="button" id="shuffleButton">Перемешать</button>
+          <button class="secondary" type="button" id="resetButton">Сбросить</button>
+          <button class="primary" type="button" id="checkButton">Проверить</button>
+        </div>
+      </section>
+
+      <div class="progress" aria-hidden="true">
+        <span id="progressBar"></span>
+      </div>
+
+      <section id="resultPanel" class="result-panel" hidden>
+        <strong id="resultTitle"></strong>
+        <span id="resultDetails"></span>
+      </section>
+
+      <section id="questions" class="questions" aria-label="Вопросы теста"></section>
+    </main>
+
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
